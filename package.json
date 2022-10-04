@@ -1,0 +1,32 @@
+{
+  "name": "@civ-clone/base-unit-action-goto",
+  "version": "0.1.0",
+  "repository": "git@github.com:civ-clone/base-unit-action-goto.git",
+  "keywords": [
+    "typescript",
+    "civilization"
+  ],
+  "author": "dom111 <dom111@users.noreply.github.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "npm run ts:compile && npm run prettier:format",
+    "prettier:check": "prettier --config .prettierrc '**/*.ts'",
+    "prettier:format": "prettier --config .prettierrc '**/*.ts' --write",
+    "ts:compile": "tsc --build tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@civ-clone/base-unit-action-move": "^0.1.1",
+    "@civ-clone/base-unit-action-no-orders": "^0.1.0",
+    "@civ-clone/core-rule": "^0.1.2",
+    "@civ-clone/core-strategy": "^0.1.0",
+    "@civ-clone/core-unit": "^0.1.13",
+    "@civ-clone/core-world": "^0.1.9",
+    "@civ-clone/core-world-path": "^0.1.0"
+  }
+}
