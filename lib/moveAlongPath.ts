@@ -19,7 +19,14 @@ export const moveAlongPath = (unit: Unit, path: Path): void => {
     move.perform();
   }
 
+  if (path.length === 0) {
+    unit.setBusy();
+    unit.setActive();
+  }
+
   if (unit.moves().value() === 0) {
+    unit.setActive(false);
+
     return;
   }
 

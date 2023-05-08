@@ -15,6 +15,12 @@ import {
   instance as strategyNoteRegistryInstance,
 } from '@civ-clone/core-strategy/StrategyNoteRegistry';
 import Action from '@civ-clone/core-unit/Action';
+import BusyGoTo from './Busy/GoTo';
+import Criterion from '@civ-clone/core-rule/Criterion';
+import Effect from '@civ-clone/core-rule/Effect';
+import Moved from '@civ-clone/core-unit/Rules/Moved';
+import NoPathAvailable from './Errors/NoPathAvailable';
+import NoPathFinderAvailable from './Errors/NoPathFinderAvailable';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
 import moveAlongPath from './lib/moveAlongPath';
@@ -43,8 +49,7 @@ export class GoTo extends Action {
     const [PathFinder] = this.#pathFinderRegistry.entries();
 
     if (!PathFinder) {
-      // TODO: shout about this?
-      return;
+      throw new NoPathFinderAvailable();
     }
 
     const path = new PathFinder(
@@ -54,9 +59,10 @@ export class GoTo extends Action {
     ).generate();
 
     if (!path) {
-      // TODO: shout about this?
-      return;
+      throw new NoPathAvailable();
     }
+
+    this.unit().setBusy();
 
     // remove the current `Tile` so that the next shift will be the target.
     path.shift();
@@ -66,6 +72,18 @@ export class GoTo extends Action {
     );
 
     moveAlongPath(this.unit(), path);
+
+    this.unit().setBusy(
+      new BusyGoTo(
+        new Criterion((): boolean => this.unit().tile() === path.end()),
+        new Effect((): void => {
+          this.unit().setActive();
+          this.unit().setBusy();
+        })
+      )
+    );
+
+    this.ruleRegistry().process(Moved, this.unit(), this);
   }
 }
 

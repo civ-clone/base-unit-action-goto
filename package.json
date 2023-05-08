@@ -1,6 +1,7 @@
 {
   "name": "@civ-clone/base-unit-action-goto",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "main": "index.js",
   "repository": "git@github.com:civ-clone/base-unit-action-goto.git",
   "keywords": [
     "typescript",
@@ -23,6 +24,7 @@
   "dependencies": {
     "@civ-clone/base-unit-action-move": "^0.1.1",
     "@civ-clone/base-unit-action-no-orders": "^0.1.0",
+    "@civ-clone/core-player": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.2",
     "@civ-clone/core-strategy": "^0.1.0",
     "@civ-clone/core-unit": "^0.1.13",

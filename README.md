@@ -1,3 +1,3 @@
 # base-unit-action-goto
 
-This is a template repo.
+A repo for handling the `GoTo` command, sending a `Unit` to a distant `Tile`.
