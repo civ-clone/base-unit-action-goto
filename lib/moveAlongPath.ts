@@ -1,10 +1,19 @@
+import {
+  StrategyNoteRegistry,
+  instance as strategyNoteRegistryInstance,
+} from '@civ-clone/core-strategy/StrategyNoteRegistry';
 import Action from '@civ-clone/core-unit/Action';
 import Move from '@civ-clone/base-unit-action-move/Move';
 import NoOrders from '@civ-clone/base-unit-action-no-orders/NoOrders';
 import Path from '@civ-clone/core-world-path/Path';
 import Unit from '@civ-clone/core-unit/Unit';
+import { generateKey } from '../GoTo';
 
-export const moveAlongPath = (unit: Unit, path: Path): void => {
+export const moveAlongPath = (
+  unit: Unit,
+  path: Path,
+  strategyNoteRegistry: StrategyNoteRegistry = strategyNoteRegistryInstance
+): void => {
   while (unit.moves().value() > 0.25) {
     const [move] = unit
       .actions(path.shift())
@@ -22,11 +31,15 @@ export const moveAlongPath = (unit: Unit, path: Path): void => {
   if (path.length === 0) {
     unit.setBusy();
     unit.setActive();
+
+    const note = strategyNoteRegistry.getByKey(generateKey(unit));
+
+    if (note) {
+      strategyNoteRegistry.unregister(note);
+    }
   }
 
-  if (unit.moves().value() === 0) {
-    unit.setActive(false);
-
+  if (unit.moves().value() > 0.25) {
     return;
   }
 
