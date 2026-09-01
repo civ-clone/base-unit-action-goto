@@ -6,7 +6,8 @@ import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
 export declare const generateKey: (unit: Unit) => string;
 export declare class GoTo extends Action {
-  #private;
+  private _pathFinderRegistry;
+  private _strategyNoteRegistry;
   constructor(
     from: Tile,
     to: Tile,

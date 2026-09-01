@@ -28,8 +28,8 @@ import moveAlongPath from './lib/moveAlongPath';
 export const generateKey = (unit: Unit) => generateRawKey(unit, 'currentPath');
 
 export class GoTo extends Action {
-  #pathFinderRegistry: PathFinderRegistry;
-  #strategyNoteRegistry: StrategyNoteRegistry;
+  private _pathFinderRegistry: PathFinderRegistry;
+  private _strategyNoteRegistry: StrategyNoteRegistry;
 
   constructor(
     from: Tile,
@@ -41,12 +41,12 @@ export class GoTo extends Action {
   ) {
     super(from, to, unit, ruleRegistry);
 
-    this.#pathFinderRegistry = pathFinderRegistry;
-    this.#strategyNoteRegistry = strategyNoteRegistry;
+    this._pathFinderRegistry = pathFinderRegistry;
+    this._strategyNoteRegistry = strategyNoteRegistry;
   }
 
   perform(): void {
-    const [PathFinder] = this.#pathFinderRegistry.entries();
+    const [PathFinder] = this._pathFinderRegistry.entries();
 
     if (!PathFinder) {
       throw new NoPathFinderAvailable();
@@ -67,7 +67,7 @@ export class GoTo extends Action {
     // remove the current `Tile` so that the next shift will be the target.
     path.shift();
 
-    this.#strategyNoteRegistry.replace(
+    this._strategyNoteRegistry.replace(
       new StrategyNote(generateKey(this.unit()), path)
     );
 
