@@ -24,6 +24,7 @@
   "dependencies": {
     "@civ-clone/base-unit-action-move": "^0.1.1",
     "@civ-clone/base-unit-action-no-orders": "^0.1.0",
+    "@civ-clone/core-game": "^0.1.1",
     "@civ-clone/core-player": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.2",
     "@civ-clone/core-strategy": "^0.1.0",
