@@ -9,8 +9,8 @@ import {
 import Effect from '@civ-clone/core-rule/Effect';
 import GoTo from '../../Busy/GoTo';
 import Low from '@civ-clone/core-rule/Priorities/Low';
-import Path from '@civ-clone/core-world-path/Path';
 import Player from '@civ-clone/core-player/Player';
+import Tile from '@civ-clone/core-world/Tile';
 import TurnStart from '@civ-clone/core-player/Rules/TurnStart';
 import { generateKey } from '../../GoTo';
 import moveAlongPath from '../../lib/moveAlongPath';
@@ -28,7 +28,7 @@ export const getRules = (
           return;
         }
 
-        const note = strategyNoteRegistry.getByKey<Path>(generateKey(unit));
+        const note = strategyNoteRegistry.getByKey<Tile[]>(generateKey(unit));
 
         if (!note) {
           unit.setBusy();
