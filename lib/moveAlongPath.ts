@@ -23,11 +23,23 @@ export const moveAlongPath = (
   strategyNoteRegistry: StrategyNoteRegistry = strategyNoteRegistryInstance
 ): void => {
   while (unit.moves().value() > 0.25) {
-    const [move] = unit
-      .actions(path.shift())
-      .filter(
-        (action: Action | Move): action is Move => action instanceof Move
-      );
+    const moves = unit
+        .actions(path.shift())
+        .filter(
+          (action: Action | Move): action is Move => action instanceof Move
+        ),
+      // Passing through, a plain `Move` is preferred over a more specific one, so an aircraft flies over a city it
+      // could land in (landing would end its turn). On the last tile of the route, or with the unit's last move, the
+      // first one is taken as usual.
+      passingThrough = path.length > 0 && unit.moves().value() > 1,
+      [move] = passingThrough
+        ? [
+            ...moves.filter(
+              (action: Move): boolean => action.constructor === Move
+            ),
+            ...moves,
+          ]
+        : moves;
 
     if (!move) {
       break;
