@@ -22,16 +22,17 @@ export const moveAlongPath = (
   path: Tile[],
   strategyNoteRegistry: StrategyNoteRegistry = strategyNoteRegistryInstance
 ): void => {
-  while (unit.moves().value() > 0.25) {
-    const moves = unit
-        .actions(path.shift())
+  while (path.length > 0 && unit.moves().value() > 0.25) {
+    const [target] = path,
+      moves = unit
+        .actions(target)
         .filter(
           (action: Action | Move): action is Move => action instanceof Move
         ),
       // Passing through, a plain `Move` is preferred over a more specific one, so an aircraft flies over a city it
       // could land in (landing would end its turn). On the last tile of the route, or with the unit's last move, the
       // first one is taken as usual.
-      passingThrough = path.length > 0 && unit.moves().value() > 1,
+      passingThrough = path.length > 1 && unit.moves().value() > 1,
       [move] = passingThrough
         ? [
             ...moves.filter(
@@ -42,10 +43,25 @@ export const moveAlongPath = (
         : moves;
 
     if (!move) {
+      // Nothing can move onto the next tile (another player's unit is on it,
+      // say), so the route no longer works: end the journey below and hand the
+      // unit back.
+      path.splice(0, path.length);
+
       break;
     }
 
     move.perform();
+
+    // A move can fail: a unit short of the moves a tile costs only gets there
+    // by chance, and loses the rest of its turn either way. The tile stays at
+    // the head of the path so the next turn tries it again, and isn't skipped,
+    // which would leave the rest of the path starting somewhere the unit isn't.
+    if (unit.tile() !== target) {
+      break;
+    }
+
+    path.shift();
   }
 
   if (path.length === 0) {
