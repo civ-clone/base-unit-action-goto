@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
+const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const StrategyNoteRegistry_1 = require("@civ-clone/core-strategy/StrategyNoteRegistry");
 const UnitRegistry_1 = require("@civ-clone/core-unit/UnitRegistry");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
@@ -9,7 +10,7 @@ const Low_1 = require("@civ-clone/core-rule/Priorities/Low");
 const TurnStart_1 = require("@civ-clone/core-player/Rules/TurnStart");
 const GoTo_2 = require("../../GoTo");
 const moveAlongPath_1 = require("../../lib/moveAlongPath");
-const getRules = (strategyNoteRegistry = StrategyNoteRegistry_1.instance, unitRegistry = UnitRegistry_1.instance) => [
+const getRules = (strategyNoteRegistry = StrategyNoteRegistry_1.instance, unitRegistry = UnitRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance) => [
     new TurnStart_1.default(
     // This needs to have happened after the `Unit`s `Yield`s have been reset.
     new Low_1.default(), new Effect_1.default((player) => unitRegistry.getByPlayer(player).forEach((unit) => {
@@ -23,7 +24,7 @@ const getRules = (strategyNoteRegistry = StrategyNoteRegistry_1.instance, unitRe
             return;
         }
         const path = note.value();
-        (0, moveAlongPath_1.default)(unit, path);
+        (0, moveAlongPath_1.default)(unit, path, strategyNoteRegistry, ruleRegistry);
     }))),
 ];
 exports.getRules = getRules;

@@ -64,8 +64,14 @@ class GoTo extends Action_1.default {
         // remove the current `Tile` so that the next shift will be the target.
         remaining.shift();
         this._strategyNoteRegistry.replace(new StrategyNote_1.StrategyNote((0, exports.generateKey)(this.unit()), remaining));
-        (0, moveAlongPath_1.default)(this.unit(), remaining);
-        this.unit().setBusy((0, exports.goToBusy)(this.unit(), this._strategyNoteRegistry));
+        (0, moveAlongPath_1.default)(this.unit(), remaining, this._strategyNoteRegistry, this.ruleRegistry());
+        // Only while the journey is under way: when it has already ended (arrived, stopped short of a choice, or blocked),
+        // `moveAlongPath` has handed the unit back, and marking it busy again would leave it awake but still showing GoTo
+        // (civ-clone/web-renderer#357).
+        if (this._strategyNoteRegistry.getByKey((0, exports.generateKey)(this.unit())) !==
+            undefined) {
+            this.unit().setBusy((0, exports.goToBusy)(this.unit(), this._strategyNoteRegistry));
+        }
         this.ruleRegistry().process(Moved_1.default, this.unit(), this);
     }
 }
