@@ -1,8 +1,14 @@
 import {
+  RuleRegistry,
+  instance as ruleRegistryInstance,
+} from '@civ-clone/core-rule/RuleRegistry';
+import {
   StrategyNoteRegistry,
   instance as strategyNoteRegistryInstance,
 } from '@civ-clone/core-strategy/StrategyNoteRegistry';
 import Action from '@civ-clone/core-unit/Action';
+import CaptureCity from '@civ-clone/base-unit-action-capture-city/CaptureCity';
+import Halted from '../Rules/Halted';
 import Move from '@civ-clone/base-unit-action-move/Move';
 import NoOrders from '@civ-clone/base-unit-action-no-orders/NoOrders';
 import Tile from '@civ-clone/core-world/Tile';
@@ -20,15 +26,18 @@ import { generateKey } from '../GoTo';
 export const moveAlongPath = (
   unit: Unit,
   path: Tile[],
-  strategyNoteRegistry: StrategyNoteRegistry = strategyNoteRegistryInstance
+  strategyNoteRegistry: StrategyNoteRegistry = strategyNoteRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): void => {
+  // The destination, when the journey stops next to it for the player to choose what to do there.
+  let haltedAt: Tile | null = null;
+
   while (path.length > 0 && unit.moves().value() > 0.25) {
     const [target] = path,
-      moves = unit
-        .actions(target)
-        .filter(
-          (action: Action | Move): action is Move => action instanceof Move
-        ),
+      actions = unit.actions(target),
+      moves = actions.filter(
+        (action: Action | Move): action is Move => action instanceof Move
+      ),
       // Passing through, a plain `Move` is preferred over a more specific one, so an aircraft flies over a city it
       // could land in (landing would end its turn). On the last tile of the route, or with the unit's last move, the
       // first one is taken as usual.
@@ -41,6 +50,23 @@ export const moveAlongPath = (
             ...moves,
           ]
         : moves;
+
+    // The last step offers more than a move (a Caravan's Help build Wonder, a Diplomat's actions, an attack, capturing
+    // a city): stop here and hand the unit back, so its player chooses, as moving it there by hand would ask them to.
+    // A move of another kind (an aircraft landing, a unit boarding a ship) is still taken.
+    if (
+      path.length === 1 &&
+      actions.some(
+        (action: Action): boolean =>
+          !(action instanceof Move) || action instanceof CaptureCity
+      )
+    ) {
+      haltedAt = target;
+
+      path.splice(0, path.length);
+
+      break;
+    }
 
     if (!move) {
       // Nothing can move onto the next tile (another player's unit is on it,
@@ -73,6 +99,10 @@ export const moveAlongPath = (
     if (note) {
       strategyNoteRegistry.unregister(note);
     }
+  }
+
+  if (haltedAt !== null) {
+    ruleRegistry.process(Halted, unit, haltedAt);
   }
 
   if (unit.moves().value() > 0.25) {

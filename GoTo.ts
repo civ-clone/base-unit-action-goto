@@ -112,9 +112,22 @@ export class GoTo extends Action {
       new StrategyNote(generateKey(this.unit()), remaining)
     );
 
-    moveAlongPath(this.unit(), remaining);
+    moveAlongPath(
+      this.unit(),
+      remaining,
+      this._strategyNoteRegistry,
+      this.ruleRegistry()
+    );
 
-    this.unit().setBusy(goToBusy(this.unit(), this._strategyNoteRegistry));
+    // Only while the journey is under way: when it has already ended (arrived, stopped short of a choice, or blocked),
+    // `moveAlongPath` has handed the unit back, and marking it busy again would leave it awake but still showing GoTo
+    // (civ-clone/web-renderer#357).
+    if (
+      this._strategyNoteRegistry.getByKey(generateKey(this.unit())) !==
+      undefined
+    ) {
+      this.unit().setBusy(goToBusy(this.unit(), this._strategyNoteRegistry));
+    }
 
     this.ruleRegistry().process(Moved, this.unit(), this);
   }

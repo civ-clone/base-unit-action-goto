@@ -1,4 +1,8 @@
 import {
+  RuleRegistry,
+  instance as ruleRegistryInstance,
+} from '@civ-clone/core-rule/RuleRegistry';
+import {
   StrategyNoteRegistry,
   instance as strategyNoteRegistryInstance,
 } from '@civ-clone/core-strategy/StrategyNoteRegistry';
@@ -17,7 +21,8 @@ import moveAlongPath from '../../lib/moveAlongPath';
 
 export const getRules = (
   strategyNoteRegistry: StrategyNoteRegistry = strategyNoteRegistryInstance,
-  unitRegistry: UnitRegistry = unitRegistryInstance
+  unitRegistry: UnitRegistry = unitRegistryInstance,
+  ruleRegistry: RuleRegistry = ruleRegistryInstance
 ): TurnStart[] => [
   new TurnStart(
     // This needs to have happened after the `Unit`s `Yield`s have been reset.
@@ -39,7 +44,7 @@ export const getRules = (
 
         const path = note.value();
 
-        moveAlongPath(unit, path);
+        moveAlongPath(unit, path, strategyNoteRegistry, ruleRegistry);
       })
     )
   ),

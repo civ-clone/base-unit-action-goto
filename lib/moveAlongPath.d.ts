@@ -1,3 +1,4 @@
+import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { StrategyNoteRegistry } from '@civ-clone/core-strategy/StrategyNoteRegistry';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
@@ -12,6 +13,7 @@ import Unit from '@civ-clone/core-unit/Unit';
 export declare const moveAlongPath: (
   unit: Unit,
   path: Tile[],
-  strategyNoteRegistry?: StrategyNoteRegistry
+  strategyNoteRegistry?: StrategyNoteRegistry,
+  ruleRegistry?: RuleRegistry
 ) => void;
 export default moveAlongPath;
