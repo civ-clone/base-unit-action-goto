@@ -2,6 +2,7 @@ import { PathFinderRegistry } from '@civ-clone/core-world-path/PathFinderRegistr
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { StrategyNoteRegistry } from '@civ-clone/core-strategy/StrategyNoteRegistry';
 import Action from '@civ-clone/core-unit/Action';
+import { BusyContext } from '@civ-clone/core-unit/BusyRegistry';
 import BusyGoTo from './Busy/GoTo';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
@@ -34,4 +35,8 @@ export declare class GoTo extends Action {
   );
   perform(): void;
 }
+export declare const restoreGoTo: (
+  unit: Unit,
+  context?: BusyContext
+) => BusyGoTo;
 export default GoTo;

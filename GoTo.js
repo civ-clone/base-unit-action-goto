@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoTo = exports.goToBusy = exports.generateKey = void 0;
+exports.restoreGoTo = exports.GoTo = exports.goToBusy = exports.generateKey = void 0;
 const PathFinderRegistry_1 = require("@civ-clone/core-world-path/PathFinderRegistry");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const StrategyNote_1 = require("@civ-clone/core-strategy/StrategyNote");
@@ -81,6 +81,11 @@ exports.GoTo = GoTo;
 // criterion compares against was never written to the file, so there was
 // nothing to rebuild the rule from and inventing a path would have sent the
 // unit somewhere it had not been going.
-BusyRegistry_1.instance.register(GoTo_1.default, (unit) => (0, exports.goToBusy)(unit));
+//
+// The path is the loading game's note, so a unit loaded into a game with its own registries follows its own route
+// (civ-clone/web-renderer#248).
+const restoreGoTo = (unit, context = {}) => (0, exports.goToBusy)(unit, context.strategyNotes);
+exports.restoreGoTo = restoreGoTo;
+BusyRegistry_1.instance.register(GoTo_1.default, exports.restoreGoTo);
 exports.default = GoTo;
 //# sourceMappingURL=GoTo.js.map
