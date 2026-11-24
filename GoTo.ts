@@ -15,7 +15,10 @@ import {
   instance as strategyNoteRegistryInstance,
 } from '@civ-clone/core-strategy/StrategyNoteRegistry';
 import Action from '@civ-clone/core-unit/Action';
-import { instance as busyRegistryInstance } from '@civ-clone/core-unit/BusyRegistry';
+import {
+  BusyContext,
+  instance as busyRegistryInstance,
+} from '@civ-clone/core-unit/BusyRegistry';
 import BusyGoTo from './Busy/GoTo';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -138,6 +141,15 @@ export class GoTo extends Action {
 // criterion compares against was never written to the file, so there was
 // nothing to rebuild the rule from and inventing a path would have sent the
 // unit somewhere it had not been going.
-busyRegistryInstance.register(BusyGoTo, (unit: Unit) => goToBusy(unit));
+//
+// The path is the loading game's note, so a unit loaded into a game with its own registries follows its own route
+// (civ-clone/web-renderer#248).
+export const restoreGoTo = (unit: Unit, context: BusyContext = {}): BusyGoTo =>
+  goToBusy(
+    unit,
+    (context as { strategyNotes?: StrategyNoteRegistry }).strategyNotes
+  );
+
+busyRegistryInstance.register(BusyGoTo, restoreGoTo);
 
 export default GoTo;
